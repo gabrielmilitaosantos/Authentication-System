@@ -50,6 +50,19 @@ class UserModel {
     }
   }
 
+  async findByEmail(email) {
+    try {
+      const [user] = await sql`
+        SELECT * FROM users WHERE email = ${email}
+      `;
+
+      return user;
+    } catch (error) {
+      console.error("Error finding user by email:", error);
+      throw error;
+    }
+  }
+
   async emailExists(email) {
     try {
       const [user] = await sql`
