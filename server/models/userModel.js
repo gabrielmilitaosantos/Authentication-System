@@ -1,12 +1,4 @@
-import postgres from "postgres";
-
-const { DATABASE_URL } = process.env;
-
-const sql = postgres(DATABASE_URL, {
-  ssl: "require",
-  idle_timeout: 20,
-  connect_timeout: 60,
-});
+import { sql } from "../config/database.js";
 
 class UserModel {
   constructor() {
@@ -28,7 +20,7 @@ class UserModel {
          resetOtpExpires INT DEFAULT 0
          )         
          `;
-      console.log("Users table created or already exists.");
+      console.log("Users table ready");
     } catch (error) {
       console.error("Error creating users table:", error);
       throw error;

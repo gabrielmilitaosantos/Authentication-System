@@ -10,12 +10,11 @@ const sql = postgres(DATABASE_URL, {
 
 async function connectDB() {
   try {
-    const result = await sql`select version()`;
-    console.log("Database version:", result[0]);
-
-    await sql.end();
+    const result = await sql`SELECT version()`;
+    console.log("Database connected:", result[0]);
   } catch (error) {
     console.error("Error connecting to Neon database:", error);
+    throw error;
   }
 }
 
