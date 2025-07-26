@@ -13,11 +13,11 @@ class UserModel {
          name TEXT NOT NULL,
          email TEXT NOT NULL UNIQUE,
          password TEXT NOT NULL,
-         verifyOtp TEXT DEFAULT NULL,
-         verifyOtpExpires INT DEFAULT 0,
-         isAccountVerified BOOLEAN DEFAULT false,
-         resetOtp TEXT DEFAULT NULL,
-         resetOtpExpires INT DEFAULT 0
+         verify_otp TEXT DEFAULT NULL,
+         verify_otp_expires BIGINT DEFAULT 0,
+         is_account_verified BOOLEAN DEFAULT false,
+         reset_otp TEXT DEFAULT NULL,
+         reset_otp_expires BIGINT DEFAULT 0
          )         
          `;
       console.log("Users table ready");
@@ -51,6 +51,35 @@ class UserModel {
       return user;
     } catch (error) {
       console.error("Error finding user by email:", error);
+      throw error;
+    }
+  }
+
+  async findById(id) {
+    try {
+      const [user] = await sql`
+        SELECT email, verify_otp, verify_otp_expires, is_account_verified
+        FROM users 
+        WHERE id = ${id}
+      `;
+
+      return user;
+    } catch (error) {
+      console.error("Error finding user by ID:", error);
+      throw error;
+    }
+  }
+
+  async updateOtp(userId, otp, expires, isVerified = false) {
+    try {
+      await sql`
+        UPDATE users
+        SET verify_otp = ${otp}, verify_otp_expires = ${expires}, is_account_verified = ${isVerified}
+        WHERE id = ${userId}
+      `;
+      console.log("OTP updated successfully");
+    } catch (error) {
+      console.error("Error updating OTP:", error);
       throw error;
     }
   }
