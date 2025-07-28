@@ -70,6 +70,19 @@ class UserModel {
     }
   }
 
+  async emailExists(email) {
+    try {
+      const [user] = await sql`
+        SELECT id FROM users WHERE email = ${email}
+      `;
+
+      return !!user; // Return true if user exists, false otherwise
+    } catch (error) {
+      console.error("Error checking if email exists:", error);
+      throw error;
+    }
+  }
+
   async updateOtp(userId, otp, expires, isVerified = false) {
     try {
       await sql`
@@ -84,15 +97,29 @@ class UserModel {
     }
   }
 
-  async emailExists(email) {
+  async updateResetOtp(userId, otp, expires) {
     try {
-      const [user] = await sql`
-        SELECT id FROM users WHERE email = ${email}
+      await sql`
+        UPDATE users
+        SET reset_otp = ${otp}, reset_otp_expires = ${expires}
+        WHERE id = ${userId}
       `;
-
-      return !!user; // Return true if user exists, false otherwise
+      console.log("Reset OTP updated successfully");
     } catch (error) {
-      console.error("Error checking if email exists:", error);
+      console.error("Error updating reset OTP:", error);
+      throw error;
+    }
+  }
+
+  async updateUserPassword(userId, newPassword) {
+    try {
+      await sql`
+        UPDATE users
+        SET password = ${newPassword}, reset_otp = NULL, reset_otp_expires = 0
+        WHERE id = ${userId}
+      `;
+    } catch (error) {
+      console.error("Error updating user password:", error);
       throw error;
     }
   }

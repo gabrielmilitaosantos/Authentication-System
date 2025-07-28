@@ -127,21 +127,7 @@ export async function sendVerifyOtp(req, res) {
 
     const otpTime = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
 
-    console.log("=== OTP GENERATION ===");
-    console.log("Generated OTP:", otp);
-    console.log("OTP expires at:", user.verify_otp_expires);
-    console.log("OTP type:", typeof otp);
-
     await userModel.updateOtp(userId, otp, otpTime);
-
-    console.log("=== VERIFICATION AFTER SAVE ===");
-    const userAfterUpdate = await userModel.findById(userId);
-    console.log("User after OTP update:", userAfterUpdate);
-    console.log("OTP saved in DB:", userAfterUpdate?.verify_otp);
-    console.log(
-      "OTP expires saved in DB:",
-      userAfterUpdate?.verify_otp_expires
-    );
 
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
@@ -182,13 +168,6 @@ export async function verifyOtp(req, res) {
       return res.status(400).json({ error: "Account already verified" });
     }
 
-    console.log("=== OTP COMPARISON ===");
-    console.log("OTP from DB:", user.verify_otp);
-    console.log("OTP from request:", otp);
-    console.log("Are they equal?", user.verify_otp === otp);
-    console.log("DB OTP type:", typeof user.verify_otp);
-    console.log("Request OTP type:", typeof otp);
-
     if (user.verify_otp !== otp) {
       return res.status(400).json({ error: "Invalid OTP" });
     }
@@ -203,6 +182,84 @@ export async function verifyOtp(req, res) {
     return res.status(200).json({ message: "OTP verified successfully" });
   } catch (error) {
     console.error("Error verifying OTP:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function isAuthenticated(req, res) {
+  try {
+    return res.status(200).json({ authenticated: true });
+  } catch (error) {
+    console.error("Error checking authentication:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+// Function to send a password reset OTP to the user's email
+export async function sendResetOtp(req, res) {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  try {
+    const user = await userModel.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000)); // Generate a 6-digit OTP
+    const otpTime = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
+
+    await userModel.updateResetOtp(user.id, otp, otpTime);
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "Password Reset OTP",
+      text: `Your password reset OTP is: ${otp}\n\n
+      Use this number to reset your password.\n
+      This OTP is valid for 10 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.status(200).json({ message: "Reset OTP sent successfully" });
+  } catch (error) {
+    console.error("Error sending reset OTP:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+// Reset Password using OTP
+export async function verifyResetOtp(req, res) {
+  const { email, otp, newPassword } = req.body;
+
+  if (!email || !otp || !newPassword) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    const user = await userModel.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.reset_otp !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    if (user.reset_otp_expires < Date.now()) {
+      return res.status(400).json({ error: "OTP has expired" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    await userModel.updateUserPassword(user.id, hashedPassword);
+
+    return res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Error resetting password:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 }
