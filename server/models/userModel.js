@@ -58,9 +58,7 @@ class UserModel {
   async findById(id) {
     try {
       const [user] = await sql`
-        SELECT email, verify_otp, verify_otp_expires, is_account_verified
-        FROM users 
-        WHERE id = ${id}
+        SELECT * FROM users WHERE id = ${id}
       `;
 
       return user;

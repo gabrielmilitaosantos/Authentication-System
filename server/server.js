@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/database.js";
 import userModel from "./models/userModel.js";
 import authRouter from "./routes/authRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to the server!");
 });
 app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
 async function initializeServer() {
   try {
