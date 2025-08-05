@@ -9,11 +9,14 @@ import userRouter from "./routes/userRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : [];
 
 // Middleware setup
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.get("/", (req, res) => {
   res.send("Welcome to the server!");

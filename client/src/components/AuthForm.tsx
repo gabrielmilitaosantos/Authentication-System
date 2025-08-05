@@ -1,5 +1,9 @@
+import { useContext } from "react";
 import { assets } from "../assets/assets";
 import { useForm } from "react-hook-form";
+import { AppContext } from "../context/App-Context";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 interface AuthFormProps {
   authSet?: string;
@@ -32,9 +36,40 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
     mode: "onBlur",
   });
 
-  const onSubmit = (data: Inputs) => {
-    console.log(data);
-  };
+  const { backendUrl, setIsLogin, getUserData } = useContext(AppContext);
+
+  async function onSubmit(data: Inputs) {
+    try {
+      axios.defaults.withCredentials = true; // Enable cookies for cross-origin requests
+
+      if (authSet === "Sign Up") {
+        await axios.post(`${backendUrl}/api/auth/register`, {
+          fullName: data.fullName,
+          email: data.email,
+          password: data.password,
+        });
+
+        toast.success("Registration successful! Please log in.");
+        setIsLogin(true);
+        await getUserData();
+        onNavigate("/login");
+      } else {
+        await axios.post(`${backendUrl}/api/auth/login`, {
+          email: data.email,
+          password: data.password,
+        });
+
+        toast.success("Login successful!");
+        setIsLogin(true);
+        await getUserData();
+        onNavigate("/");
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.error || "An error occurred. Please try again.";
+      toast.error(errorMessage);
+    }
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
