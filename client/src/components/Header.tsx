@@ -1,6 +1,11 @@
 import { assets } from "../assets/assets";
+import { useAppContext } from "../hooks/useAppContext";
 
 export default function Header() {
+  const buttonClass =
+    "border border-gray-500 rounded-full px-8 py-3 hover:bg-gray-100 transition-all cursor-pointer";
+
+  const { userData, isLogin } = useAppContext();
   return (
     <div className="flex flex-col items-center mt-20 px-4 text-center text-gray-800">
       <img
@@ -10,7 +15,7 @@ export default function Header() {
       />
 
       <h1 className="flex items-center gap-2 text-xl sm:text-3xl font-medium mb-2">
-        Hey Developer{" "}
+        Hey {isLogin ? userData?.name : "Developer"}!
         <img
           src={assets.hand_wave}
           alt="Hand-Icon"
@@ -21,9 +26,7 @@ export default function Header() {
       <h2 className="text-3xl sm:text-5xl font-semibold mb-4">
         Welcome to my app
       </h2>
-      <button className="border border-gray-500 rounded-full px-8 py-3 hover:bg-gray-100 transition-all cursor-pointer">
-        Get Started
-      </button>
+      <button className={buttonClass}>Get Started</button>
     </div>
   );
 }

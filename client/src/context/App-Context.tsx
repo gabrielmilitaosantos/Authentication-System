@@ -1,5 +1,11 @@
 import axios from "axios";
-import { createContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { toast } from "react-toastify";
 
 interface AppContextProps {
@@ -11,43 +17,29 @@ interface UserData {
   isAccountVerified: boolean;
 }
 
-export const AppContext = createContext({
-  backendUrl: "",
-  isLogin: false,
-  setIsLogin: (_value: boolean) => {},
-  userData: {} as UserData,
-  setUserData: (_value: any) => {},
-  getUserData: () => Promise.resolve(),
-});
+interface AppContextType {
+  backendUrl: string;
+  isLogin: boolean;
+  setIsLogin: (value: boolean) => void;
+  userData: UserData | null;
+  setUserData: (value: UserData | null) => void;
+  getUserData: () => Promise<void>;
+  resetUserData: () => void;
+}
+
+export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export default function AppContextProvider({ children }: AppContextProps) {
   const backendUrl = import.meta.env.VITE_BACKEND_URL as string;
 
   const [isLogin, setIsLogin] = useState(false);
-  const [userData, setUserData] = useState<UserData>({
-    name: "",
-    isAccountVerified: false,
-  });
+  const [userData, setUserData] = useState<UserData | null>(null);
 
-  async function getAuthStatus() {
-    try {
-      const { data } = await axios.get(`${backendUrl}/api/auth/is-auth`);
-      setIsLogin(data.authenticated);
-      await getUserData();
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        setIsLogin(false);
-        return;
-      }
+  const resetUserData = useCallback(() => {
+    setUserData(null);
+  }, []);
 
-      const errorMessage =
-        error.response?.data?.error ||
-        "An error occurred while checking authentication status.";
-      toast.error(errorMessage);
-    }
-  }
-
-  async function getUserData() {
+  const getUserData = useCallback(async () => {
     try {
       const { data } = await axios.get(`${backendUrl}/api/user/data`);
       setUserData(data.userData);
@@ -57,22 +49,45 @@ export default function AppContextProvider({ children }: AppContextProps) {
         "An error occurred while fetching user data.";
       toast.error(errorMessage);
     }
-  }
+  }, [backendUrl]);
+
+  const getAuthStatus = useCallback(async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/auth/is-auth`);
+      setIsLogin(data.authenticated);
+      if (data.authenticated) {
+        await getUserData();
+      }
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        setIsLogin(false);
+        resetUserData();
+        return;
+      }
+
+      const errorMessage =
+        error.response?.data?.error ||
+        "An error occurred while checking authentication status.";
+      toast.error(errorMessage);
+    }
+  }, [backendUrl, getUserData, resetUserData]);
 
   useEffect(() => {
-    (async () => {
-      await getAuthStatus();
-    })();
-  }, []);
+    getAuthStatus();
+  }, [getAuthStatus]);
 
-  const ctxValue = {
-    backendUrl,
-    isLogin,
-    setIsLogin,
-    userData,
-    setUserData,
-    getUserData,
-  };
+  const ctxValue = useMemo(
+    () => ({
+      backendUrl,
+      isLogin,
+      setIsLogin,
+      userData,
+      setUserData,
+      getUserData,
+      resetUserData,
+    }),
+    [backendUrl, isLogin, userData, getUserData, resetUserData]
+  );
 
   return <AppContext.Provider value={ctxValue}>{children}</AppContext.Provider>;
 }

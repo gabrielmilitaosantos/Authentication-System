@@ -1,9 +1,8 @@
-import { useContext } from "react";
 import { assets } from "../assets/assets";
 import { useForm } from "react-hook-form";
-import { AppContext } from "../context/App-Context";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useAppContext } from "../hooks/useAppContext";
 
 interface AuthFormProps {
   authSet?: string;
@@ -36,7 +35,7 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
     mode: "onBlur",
   });
 
-  const { backendUrl, setIsLogin, getUserData } = useContext(AppContext);
+  const { backendUrl, setIsLogin, getUserData } = useAppContext();
 
   async function onSubmit(data: Inputs) {
     try {
