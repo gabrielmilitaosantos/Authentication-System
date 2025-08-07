@@ -30,7 +30,22 @@ interface AppContextType {
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export default function AppContextProvider({ children }: AppContextProps) {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL as string;
+  axios.defaults.withCredentials = true; // send cookies
+
+  const backendUrl = (() => {
+    const url = import.meta.env.VITE_BACKEND_URL as string;
+    if (!url) {
+      console.error("VITE_BACKEND_URL is not defined in environment variables");
+      throw new Error("Backend URL configuration is missing");
+    }
+
+    try {
+      new URL(url);
+      return url;
+    } catch (error) {
+      throw new Error("VITE_BACKEND_URL is not a valid URL");
+    }
+  })();
 
   const [isLogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
