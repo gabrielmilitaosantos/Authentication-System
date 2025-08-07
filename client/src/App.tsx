@@ -19,7 +19,7 @@ export default function App() {
   return (
     <>
       <ToastContainer />
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
     </>
   );
 }

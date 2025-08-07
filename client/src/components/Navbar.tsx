@@ -3,6 +3,7 @@ import { assets } from "../assets/assets";
 import axios from "axios";
 import { useAppContext } from "../hooks/useAppContext";
 import { useCallback } from "react";
+import { toast } from "react-toastify";
 
 export default function Navbar() {
   const buttonClass =
@@ -23,13 +24,33 @@ export default function Navbar() {
   const { backendUrl, userData, resetUserData, isLogin, setIsLogin } =
     useAppContext();
 
+  const sendVerificationOtp = useCallback(async () => {
+    try {
+      axios.defaults.withCredentials = true;
+      const { data } = await axios.post(
+        `${backendUrl}/api/auth/send-verify-otp`
+      );
+      navigate("/email-verify");
+      toast.success(data.message);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.error || "An error occurred. Please try again.";
+      toast.error(errorMessage);
+    }
+  }, [backendUrl]);
+
   const logout = useCallback(async () => {
     try {
       axios.defaults.withCredentials = true;
       await axios.post(`${backendUrl}/api/auth/logout`);
       setIsLogin(false);
       resetUserData();
-    } catch (error) {}
+      navigate("/");
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.error || "An error occurred. Please try again.";
+      toast.error(errorMessage);
+    }
   }, [backendUrl, setIsLogin, resetUserData]);
 
   return (
@@ -41,7 +62,9 @@ export default function Navbar() {
           <div className={listDivClass}>
             <ul className="list-none m-0 p-2 bg-gray-100 text-sm">
               {!userData?.isAccountVerified && (
-                <li className={listClass}>Verify Email</li>
+                <li className={listClass} onClick={sendVerificationOtp}>
+                  Verify Email
+                </li>
               )}
 
               <li className={`${listClass} pr-10`} onClick={logout}>
