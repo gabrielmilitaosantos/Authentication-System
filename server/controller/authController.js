@@ -139,11 +139,44 @@ export async function sendVerifyOtp(req, res) {
 
     await transporter.sendMail(mailOptions);
 
-    return res
-      .status(200)
-      .json({ message: "Verification OTP sent successfully" });
+    return res.status(200).json({
+      message: "Verification OTP sent successfully",
+      expiresAt: otpTime,
+    });
   } catch (error) {
     console.error("Error sending verification OTP:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+// Function to get OTP status for timer in client
+export async function getOtpStatus(req, res) {
+  try {
+    const userId = req.user?.id;
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.is_account_verified) {
+      return res.status(200).json({
+        hasActiveOtp: false,
+        isVerified: true,
+        message: "Account already verified",
+      });
+    }
+
+    const hasActiveOtp =
+      user.verify_otp && user.verify_otp_expires > Date.now();
+
+    return res.status(200).json({
+      hasActiveOtp,
+      expiresAt: hasActiveOtp ? user.verify_otp_expires : null,
+      isVerified: user.is_account_verified,
+    });
+  } catch (error) {
+    console.error("Error getting OTP status: ", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 }
