@@ -140,7 +140,7 @@ export async function sendVerifyOtp(req, res) {
     await transporter.sendMail(mailOptions);
 
     return res.status(200).json({
-      message: "Verification OTP sent successfully",
+      message: "Verification code sent successfully",
       expiresAt: otpTime,
     });
   } catch (error) {
@@ -239,7 +239,7 @@ export async function sendResetOtp(req, res) {
   try {
     const user = await userModel.findByEmail(email);
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "User not found. Please register" });
     }
 
     const otp = String(Math.floor(100000 + Math.random() * 900000)); // Generate a 6-digit OTP
@@ -258,7 +258,10 @@ export async function sendResetOtp(req, res) {
 
     await transporter.sendMail(mailOptions);
 
-    return res.status(200).json({ message: "Reset OTP sent successfully" });
+    return res.status(200).json({
+      message: "Reset password code sent successfully",
+      expiresAt: otpTime,
+    });
   } catch (error) {
     console.error("Error sending reset OTP:", error);
     return res.status(500).json({ error: "Internal server error" });

@@ -7,9 +7,6 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 
 const STYLES = {
-  mainDiv:
-    "flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-blue-500",
-  logo: "absolute left-5 sm:left-20 top-5 sm:w-32 cursor-pointer",
   formContainer: "bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm",
   title: "text-gray-300 text-2xl font-semibold text-center mb-4",
   subtitle: "text-center mb-6 text-indigo-300",
@@ -39,7 +36,10 @@ interface VerifyFormProps {
   onTimerUpdate: (expirationTime: number) => void;
 }
 
-export default function VerifyForm({ timer, onTimerUpdate }: VerifyFormProps) {
+export default function EmailVerifyForm({
+  timer,
+  onTimerUpdate,
+}: VerifyFormProps) {
   const [loading, setLoading] = useState<LoadingState>({
     isVerifying: false,
     isResending: false,

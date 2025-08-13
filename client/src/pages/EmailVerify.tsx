@@ -5,7 +5,7 @@ import { assets } from "../assets/assets";
 import { useAppContext } from "../hooks/useAppContext";
 import { useTimer } from "../hooks/useTimer";
 import axios from "axios";
-import VerifyForm from "../components/VerifyForm";
+import EmailVerifyForm from "../components/EmailVerifyForm";
 
 const STYLES = {
   mainDiv:
@@ -55,7 +55,7 @@ export default function EmailVerify() {
         className={STYLES.logo}
         onClick={() => navigate("/")}
       />
-      <VerifyForm timer={timer} onTimerUpdate={updateTimer} />
+      <EmailVerifyForm timer={timer} onTimerUpdate={updateTimer} />
     </div>
   );
 }
