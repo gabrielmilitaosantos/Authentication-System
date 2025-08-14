@@ -19,7 +19,6 @@ interface CheckEmailProps {
   onEmailSent: (email: string, expiresAt: number) => void;
 }
 
-// 1st Form (Check email)
 export default function CheckEmailForm({ onEmailSent }: CheckEmailProps) {
   const { backendUrl } = useAppContext();
   const [isLoading, setIsLoading] = useState(false);
@@ -71,10 +70,7 @@ export default function CheckEmailForm({ onEmailSent }: CheckEmailProps) {
           required
         />
       </div>
-      <button
-        className={STYLES.submitButton}
-        disabled={isLoading || !inputRef.current?.value.trim()}
-      >
+      <button className={STYLES.submitButton} disabled={isLoading}>
         {isLoading ? "Sending..." : "Send Reset Code"}
       </button>
     </form>
