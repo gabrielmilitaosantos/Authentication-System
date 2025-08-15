@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { useOtpInput } from "../hooks/useOtpInput";
 import { formatTime } from "../util/timeFormat";
 import { toast } from "react-toastify";
+import { useAppContext } from "../hooks/useAppContext";
+import axios from "axios";
 
 const STYLES = {
   formContainer: "bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm",
@@ -40,6 +42,8 @@ export default function ResetOtpForm({
     resetOtp,
   } = useOtpInput();
 
+  const { backendUrl } = useAppContext();
+
   const [loading, setLoading] = useState({
     isVerifying: false,
     isResending: false,
@@ -49,7 +53,7 @@ export default function ResetOtpForm({
   const isAnyLoading = loading.isVerifying || loading.isResending;
   const formattedTime = formatTime(timer.timeLeft);
 
-  function handleVerifyOtp(e: React.FormEvent) {
+  async function handleVerifyOtp(e: React.FormEvent) {
     e.preventDefault();
 
     if (!isOtpComplete || timer.isExpired) return;
@@ -59,10 +63,17 @@ export default function ResetOtpForm({
     try {
       const otpCode = otp.join("");
 
+      await axios.post(`${backendUrl}/api/auth/validate-reset-otp`, {
+        email,
+        otp: otpCode,
+      });
+
       onOtpVerified(otpCode);
       toast.success("Code verified successfully");
     } catch (error: any) {
-      toast.error("Invalid verification code");
+      const errorMessage =
+        error.response?.data?.error || "Invalid verification code";
+      toast.error(errorMessage);
       resetOtp();
     } finally {
       setLoading((prev) => ({ ...prev, isVerifying: false }));

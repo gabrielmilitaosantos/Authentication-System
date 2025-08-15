@@ -7,6 +7,7 @@ import {
   register,
   sendResetOtp,
   sendVerifyOtp,
+  validateResetOtp,
   verifyOtp,
   verifyResetOtp,
 } from "../controller/authController.js";
@@ -22,6 +23,7 @@ authRouter.get("/otp-status", userAuth, getOtpStatus);
 authRouter.post("/verify-account", userAuth, verifyOtp);
 authRouter.get("/is-auth", userAuth, isAuthenticated);
 authRouter.post("/send-reset-otp", sendResetOtp);
+authRouter.post("/validate-reset-otp", validateResetOtp);
 authRouter.post("/reset-password", verifyResetOtp);
 
 export default authRouter;

@@ -268,6 +268,37 @@ export async function sendResetOtp(req, res) {
   }
 }
 
+// Function to verify OTP without authentication
+export async function validateResetOtp(req, res) {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ error: "Email and OTP are required" });
+  }
+
+  try {
+    const user = await userModel.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.reset_otp !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    if (user.reset_otp_expires < Date.now()) {
+      return res.status(400).json({ error: "OTP has expired" });
+    }
+
+    return res.status(200).json({
+      valid: true,
+    });
+  } catch (error) {
+    console.error("Error validating reset OTP:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 // Reset Password using OTP
 export async function verifyResetOtp(req, res) {
   const { email, otp, newPassword } = req.body;
