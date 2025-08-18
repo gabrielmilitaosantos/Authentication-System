@@ -15,7 +15,7 @@ const STYLES = {
   otpInput:
     "w-10 h-12 text-center text-lg font-bold rounded-md focus:outline-none transition-colors",
   verifyButton:
-    "w-full py-3 px-4 rounded-full cursor-pointer font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-4",
+    "w-full mb-4 mt-3 py-3 bg-gradient-to-r from-indigo-500 to-indigo-900 text-gray-300 rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
   resetButton:
     "w-full py-2 px-4 rounded-full cursor-pointer font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm",
 } as const;
@@ -196,7 +196,7 @@ export default function EmailVerifyForm({
       {/* Verify Button */}
       <button
         disabled={timer.isExpired || !isOtpComplete || isAnyLoading}
-        className={`${STYLES.verifyButton} bg-blue-600 text-gray-300 hover:bg-blue-700 focus:ring-blue-500`}
+        className={STYLES.verifyButton}
       >
         {loading.isVerifying ? "Verifying..." : "Verify Code"}
       </button>

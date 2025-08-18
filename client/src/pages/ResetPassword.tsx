@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import CheckEmailForm from "../components/CheckEmailForm";
 import ResetOtpForm from "../components/ResetOtpForm";
+import NewPassworForm from "../components/NewPasswordForm";
 
 const STYLES = {
   mainDiv:
@@ -147,6 +148,14 @@ export default function ResetPassword() {
           timer={timer}
           onOtpVerified={handleOtpVerified}
           onResendOtp={handleResendOtp}
+        />
+      )}
+
+      {currentStep === "new-password" && (
+        <NewPassworForm
+          email={resetData.email}
+          otp={resetData.otp}
+          onPasswordReset={handlePasswordReset}
         />
       )}
     </div>
