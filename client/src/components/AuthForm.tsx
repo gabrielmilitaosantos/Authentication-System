@@ -4,6 +4,16 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useAppContext } from "../hooks/useAppContext";
 
+const STYLES = {
+  container:
+    "flex items-center gap-3 w-full px-5 py-3 rounded-full bg-zinc-800",
+  input: "bg-transparent text-gray-300 w-full outline-none",
+  error: "ml-2 mb-2 text-orange-600",
+  textLink: "mb-4 text-indigo-500 cursor-pointer",
+  submit:
+    "w-full py-3 rounded-full cursor-pointer bg-gradient-to-r from-indigo-500 to-indigo-900 text-gray-300 font-medium",
+} as const;
+
 interface AuthFormProps {
   authSet?: string;
   onNavigate: (path: string) => void;
@@ -16,12 +26,6 @@ type Inputs = {
 };
 
 export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
-  let formDivClass =
-    "flex items-center gap-3 w-full px-5 py-3 rounded-full bg-zinc-800";
-
-  const buttonLoginClass =
-    "w-full py-3 rounded-full cursor-pointer bg-gradient-to-r from-indigo-500 to-indigo-900 text-gray-300 font-medium";
-
   const {
     register,
     handleSubmit,
@@ -75,13 +79,15 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
       {authSet === "Sign Up" && (
         <>
           <div
-            className={`${formDivClass}${errors.fullName ? " mb-1" : " mb-4"}`}
+            className={`${STYLES.container}${
+              errors.fullName ? " mb-1" : " mb-4"
+            }`}
           >
             <img src={assets.person_icon} alt="Person-Icon" />
             <input
               type="text"
               placeholder="Full Name"
-              className="bg-transparent text-gray-300 w-full outline-none"
+              className={STYLES.input}
               {...register("fullName", {
                 required: "Full name is required",
                 minLength: {
@@ -101,19 +107,17 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
             />
           </div>
           {errors.fullName && (
-            <p className="ml-2 mb-2 text-orange-600">
-              {errors.fullName.message}
-            </p>
+            <p className={STYLES.error}>{errors.fullName.message}</p>
           )}
         </>
       )}
 
-      <div className={`${formDivClass}${errors.email ? " mb-2" : " mb-4"}`}>
+      <div className={`${STYLES.container}${errors.email ? " mb-2" : " mb-4"}`}>
         <img src={assets.mail_icon} alt="Mail-Icon" />
         <input
           type="email"
           placeholder="Email"
-          className="bg-transparent text-gray-300 w-full outline-none"
+          className={STYLES.input}
           {...register("email", {
             required: "Email is required",
             pattern: {
@@ -123,16 +127,16 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
           })}
         />
       </div>
-      {errors.email && (
-        <p className="ml-2 mb-2 text-orange-600">{errors.email.message}</p>
-      )}
+      {errors.email && <p className={STYLES.error}>{errors.email.message}</p>}
 
-      <div className={`${formDivClass}${errors.password ? " mb-2" : " mb-4"}`}>
+      <div
+        className={`${STYLES.container}${errors.password ? " mb-2" : " mb-4"}`}
+      >
         <img src={assets.lock_icon} alt="Lock-Icon" />
         <input
           type="password"
           placeholder="Password"
-          className="bg-transparent text-gray-300 w-full outline-none"
+          className={STYLES.input}
           {...register("password", {
             required: "Password is required",
             minLength: {
@@ -153,19 +157,19 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
         />
       </div>
       {errors.password && (
-        <p className="ml-2 mb-2 text-orange-600">{errors.password.message}</p>
+        <p className={STYLES.error}>{errors.password.message}</p>
       )}
 
       {authSet === "Login" && (
         <p
-          className="mb-4 text-indigo-500 cursor-pointer"
+          className={STYLES.textLink}
           onClick={() => onNavigate("/reset-password")}
         >
           Forgot password?
         </p>
       )}
 
-      <button className={buttonLoginClass}>
+      <button className={STYLES.submit}>
         {isSubmitting ? "Submitting..." : authSet}
       </button>
     </form>
