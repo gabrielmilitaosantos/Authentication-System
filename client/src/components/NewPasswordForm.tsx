@@ -57,7 +57,6 @@ export default function NewPassworForm({
         newPassword: data.newPassword,
       });
 
-      toast.success("Password reset successfully");
       onPasswordReset(); // Redirect to login
     } catch (error: any) {
       const errorMessage =

@@ -71,14 +71,14 @@ export async function login(req, res) {
     const user = await userModel.emailExists(email);
 
     if (!user) {
-      return res.status(400).json({ error: "Invalid email" });
+      return res.status(400).json({ error: "User not found" });
     }
 
     const userData = await userModel.findByEmail(email);
     const isPasswordValid = await bcrypt.compare(password, userData.password);
 
     if (!isPasswordValid) {
-      return res.status(400).json({ error: "Invalid password" });
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
     const token = jwt.sign({ id: userData.id }, process.env.JWT_SECRET, {

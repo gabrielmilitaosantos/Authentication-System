@@ -14,13 +14,22 @@ const STYLES = {
 } as const;
 
 export default function EmailVerify() {
-  const { backendUrl } = useAppContext();
+  const { backendUrl, isLogin } = useAppContext();
   const navigate = useNavigate();
 
   // Custom hook
   const { timer, updateTimer, stopTimer } = useTimer();
 
   useEffect(() => {
+    if (!isLogin) {
+      toast.error("You need to be logged in to verify your email");
+      navigate("/", { replace: true });
+    }
+  }, [isLogin, navigate]);
+
+  useEffect(() => {
+    if (!isLogin) return;
+
     async function fetchOtpStatus() {
       try {
         const { data } = await axios.get(`${backendUrl}/api/auth/otp-status`);
@@ -45,7 +54,9 @@ export default function EmailVerify() {
     }
 
     fetchOtpStatus();
-  }, [backendUrl, navigate, updateTimer, stopTimer]);
+  }, [backendUrl, navigate, updateTimer, stopTimer, isLogin]);
+
+  if (!isLogin) return null;
 
   return (
     <div className={STYLES.mainDiv}>
