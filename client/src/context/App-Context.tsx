@@ -25,6 +25,8 @@ interface AppContextType {
   setUserData: (value: UserData | null) => void;
   getUserData: () => Promise<void>;
   resetUserData: () => void;
+  justLoggedIn: boolean;
+  setJustLoggedIn: (value: boolean) => void;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -49,6 +51,7 @@ export default function AppContextProvider({ children }: AppContextProps) {
 
   const [isLogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
 
   const resetUserData = useCallback(() => {
     setUserData(null);
@@ -91,6 +94,16 @@ export default function AppContextProvider({ children }: AppContextProps) {
     getAuthStatus();
   }, [getAuthStatus]);
 
+  // Avoid race condition with useEffect in Login component
+  useEffect(() => {
+    if (justLoggedIn) {
+      const timer = setTimeout(() => {
+        setJustLoggedIn(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [justLoggedIn]);
+
   const ctxValue = useMemo(
     () => ({
       backendUrl,
@@ -100,6 +113,8 @@ export default function AppContextProvider({ children }: AppContextProps) {
       setUserData,
       getUserData,
       resetUserData,
+      justLoggedIn,
+      setJustLoggedIn,
     }),
     [backendUrl, isLogin, userData, getUserData, resetUserData]
   );

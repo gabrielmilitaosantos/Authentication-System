@@ -39,7 +39,8 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
     mode: "onBlur",
   });
 
-  const { backendUrl, setIsLogin, getUserData } = useAppContext();
+  const { backendUrl, setIsLogin, getUserData, setJustLoggedIn } =
+    useAppContext();
 
   async function onSubmit(data: Inputs) {
     try {
@@ -47,15 +48,22 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
 
       if (authSet === "Sign Up") {
         await axios.post(`${backendUrl}/api/auth/register`, {
-          fullName: data.fullName,
+          name: data.fullName,
           email: data.email,
           password: data.password,
         });
 
-        toast.success("Registration successful! Please log in.");
+        toast.success(
+          <>
+            Registration successful!
+            <br />
+            Please verify your email on menu
+          </>
+        );
+        setJustLoggedIn(true);
         setIsLogin(true);
         await getUserData();
-        onNavigate("/login");
+        onNavigate("/");
       } else {
         await axios.post(`${backendUrl}/api/auth/login`, {
           email: data.email,
@@ -63,6 +71,7 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
         });
 
         toast.success("Login successful!");
+        setJustLoggedIn(true);
         setIsLogin(true);
         await getUserData();
         onNavigate("/");

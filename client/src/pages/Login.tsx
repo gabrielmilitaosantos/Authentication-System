@@ -1,7 +1,9 @@
 import { assets } from "../assets/assets";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import AuthForm from "../components/AuthForm";
+import { useAppContext } from "../hooks/useAppContext";
+import { toast } from "react-toastify";
 
 const STYLES = {
   container:
@@ -22,8 +24,16 @@ const STYLES = {
 
 export default function Login() {
   const navigate = useNavigate();
+  const { isLogin, justLoggedIn } = useAppContext();
 
   const [title, setTitle] = useState("Sign Up");
+
+  useEffect(() => {
+    if (isLogin && !justLoggedIn) {
+      toast.info("You are already logged in");
+      navigate("/", { replace: true });
+    }
+  }, [isLogin, navigate]);
 
   return (
     <div className={STYLES.container}>
