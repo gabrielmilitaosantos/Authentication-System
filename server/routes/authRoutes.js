@@ -11,6 +11,16 @@ import {
   verifyOtp,
   verifyResetOtp,
 } from "../controller/authController.js";
+import {
+  googleAuth,
+  googleCallback,
+  googleTokenAuth,
+} from "../controller/oauthController.js";
+import {
+  oauthRateLimit,
+  validateOAuthConfig,
+  validateOAuthState,
+} from "../middleware/oauthValidation.js";
 import userAuth from "../middleware/userAuth.js";
 
 const authRouter = express.Router();
@@ -25,5 +35,25 @@ authRouter.get("/is-auth", userAuth, isAuthenticated);
 authRouter.post("/send-reset-otp", sendResetOtp);
 authRouter.post("/validate-reset-otp", validateResetOtp);
 authRouter.post("/reset-password", verifyResetOtp);
+
+// OAuth routes
+authRouter.get(
+  "/oauth/google",
+  validateOAuthConfig,
+  oauthRateLimit,
+  googleAuth
+);
+authRouter.get(
+  "/oauth/google/callback",
+  validateOAuthConfig,
+  validateOAuthState,
+  googleCallback
+);
+authRouter.post(
+  "/oauth/google/token",
+  validateOAuthConfig,
+  oauthRateLimit,
+  googleTokenAuth
+);
 
 export default authRouter;
