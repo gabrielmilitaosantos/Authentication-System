@@ -1,9 +1,11 @@
 import { assets } from "../assets/assets";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import AuthForm from "../components/AuthForm";
-import { useAppContext } from "../hooks/useAppContext";
 import { toast } from "react-toastify";
+import { useAppContext } from "../hooks/useAppContext";
+import { useOAuth } from "../hooks/useOAuth";
+import AuthForm from "../components/Login/AuthForm";
+import GoogleAuthButton from "../components/Login/GoogleAuthButton";
 
 const STYLES = {
   container:
@@ -14,26 +16,65 @@ const STYLES = {
   title: "text-3xl font-semibold mb-3 text-gray-300 text-center",
   subtitle: "text-center text-sm mb-6",
   textConnect: "text-sm mb-6",
-  submitOAuth:
-    "w-full py-3 mb-5 rounded-full cursor-pointer bg-gray-100 font-medium text-slate-800",
   splitterContainer: "flex items-center gap-3 mb-5",
   split: "w-1/2 border-1 rounded-full",
   text: "text-center text-xs text-gray-400 mt-4",
   textLink: "text-blue-400 cursor-pointer underline",
+  loadingContainer: "text-center py-4",
+  loadingText: "text-gray-400 animate-pulse",
 } as const;
 
 export default function Login() {
   const navigate = useNavigate();
   const { isLogin, justLoggedIn } = useAppContext();
+  const { isProcessing } = useOAuth();
 
   const [title, setTitle] = useState("Sign Up");
 
   useEffect(() => {
-    if (isLogin && !justLoggedIn) {
+    if (isLogin && !justLoggedIn && !isProcessing) {
       toast.info("You are already logged in");
+
       navigate("/", { replace: true });
     }
-  }, [isLogin, navigate]);
+  }, [isLogin, navigate, justLoggedIn, isProcessing]);
+
+  // Redirect after successful login OAuth
+  useEffect(() => {
+    if (isLogin && justLoggedIn) {
+      const timer = setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLogin, justLoggedIn, navigate]);
+
+  function handleGoogleError(error: string) {
+    console.error("Google Auth Error:", error);
+    // Error handling is already done in the hook and button component
+  }
+
+  // Loading state during OAuth processing
+  if (isProcessing) {
+    return (
+      <div className={STYLES.container}>
+        <img
+          src={assets.logo}
+          alt="Logo"
+          className={STYLES.image}
+          onClick={() => navigate("/")}
+        />
+        <div className={STYLES.loginContainer}>
+          <div className={STYLES.loadingContainer}>
+            <div className={STYLES.loadingText}>
+              Processing Google authentication...
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={STYLES.container}>
@@ -55,16 +96,9 @@ export default function Login() {
         {title === "Sign Up" && (
           <p className={STYLES.textConnect}>Connect with:</p>
         )}
-        {title === "Sign Up" && (
-          <button className={STYLES.submitOAuth}>
-            Google [Check This Later]
-          </button>
-        )}
 
         {title === "Sign Up" && (
-          <button className={STYLES.submitOAuth}>
-            Microsoft [Check This Later]
-          </button>
+          <GoogleAuthButton onError={handleGoogleError} />
         )}
 
         {title === "Sign Up" && (
