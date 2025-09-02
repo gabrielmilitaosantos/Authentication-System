@@ -90,8 +90,14 @@ export default function AppContextProvider({ children }: AppContextProps) {
     }
   }, [backendUrl, getUserData, resetUserData]);
 
+  // check auth only if there are no OAuth params in URL
   useEffect(() => {
-    getAuthStatus();
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasOAuthParams = urlParams.get("auth") || urlParams.get("error");
+
+    if (!hasOAuthParams) {
+      getAuthStatus();
+    }
   }, [getAuthStatus]);
 
   // Avoid race condition with useEffect in Login component
@@ -116,7 +122,7 @@ export default function AppContextProvider({ children }: AppContextProps) {
       justLoggedIn,
       setJustLoggedIn,
     }),
-    [backendUrl, isLogin, userData, getUserData, resetUserData]
+    [backendUrl, isLogin, userData, justLoggedIn, getUserData, resetUserData]
   );
 
   return <AppContext.Provider value={ctxValue}>{children}</AppContext.Provider>;
