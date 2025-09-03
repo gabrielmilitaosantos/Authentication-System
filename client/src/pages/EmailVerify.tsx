@@ -21,10 +21,13 @@ export default function EmailVerify() {
   const { timer, updateTimer, stopTimer } = useTimer();
 
   useEffect(() => {
-    if (!isLogin) {
-      toast.error("You need to be logged in to verify your email");
-      navigate("/", { replace: true });
-    }
+    const timer = setTimeout(() => {
+      if (!isLogin) {
+        toast.error("You need to be logged in to verify your email");
+        navigate("/", { replace: true });
+      }
+    }, 1000);
+    return () => clearTimeout(timer);
   }, [isLogin, navigate]);
 
   useEffect(() => {
