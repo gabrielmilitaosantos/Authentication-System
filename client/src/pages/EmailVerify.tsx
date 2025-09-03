@@ -1,11 +1,11 @@
+import { assets } from "../assets/assets";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
-import { assets } from "../assets/assets";
 import { useAppContext } from "../hooks/useAppContext";
 import { useTimer } from "../hooks/useTimer";
+import { toast } from "react-toastify";
 import axios from "axios";
-import EmailVerifyForm from "../components/EmailVerifyForm";
+import EmailVerifyForm from "../components/EmailVerify/EmailVerifyForm";
 
 const STYLES = {
   mainDiv:

@@ -5,9 +5,9 @@ import { useTimer } from "../hooks/useTimer";
 import { useAppContext } from "../hooks/useAppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
-import CheckEmailForm from "../components/CheckEmailForm";
-import ResetOtpForm from "../components/ResetOtpForm";
-import NewPassworForm from "../components/NewPasswordForm";
+import CheckEmailForm from "../components/ResetPassword/CheckEmailForm";
+import ResetOtpForm from "../components/ResetPassword/ResetOtpForm";
+import NewPassworForm from "../components/ResetPassword/NewPasswordForm";
 
 const STYLES = {
   mainDiv:

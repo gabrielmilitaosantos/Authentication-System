@@ -1,8 +1,9 @@
-import { assets } from "../assets/assets";
+import { assets } from "../../assets/assets";
 import { useForm } from "react-hook-form";
-import { useAppContext } from "../hooks/useAppContext";
+import { useAppContext } from "../../hooks/useAppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Loading from "../UI/Loading";
 
 const STYLES = {
   formContainer: "bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm",
@@ -140,7 +141,7 @@ export default function NewPassworForm({
       </div>
 
       <button className={STYLES.submitButton} disabled={isSubmitting}>
-        {isSubmitting ? "Resetting..." : "Reset Password"}
+        {isSubmitting ? <Loading /> : "Reset Password"}
       </button>
     </form>
   );

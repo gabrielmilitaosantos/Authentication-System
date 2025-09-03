@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { useOtpInput } from "../hooks/useOtpInput";
-import { formatTime } from "../util/timeFormat";
+import { useOtpInput } from "../../hooks/useOtpInput";
+import { formatTime } from "../../util/timeFormat";
 import { toast } from "react-toastify";
-import { useAppContext } from "../hooks/useAppContext";
+import { useAppContext } from "../../hooks/useAppContext";
 import axios from "axios";
+import Loading from "../UI/Loading";
 
 const STYLES = {
   formContainer: "bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm",
@@ -167,7 +168,7 @@ export default function ResetOtpForm({
         disabled={timer.isExpired || !isOtpComplete || isAnyLoading}
         className={STYLES.verifyButton}
       >
-        {loading.isVerifying ? "Verifying..." : "Verify Code"}
+        {loading.isVerifying ? <Loading /> : "Verify Code"}
       </button>
 
       {/* Reset Code Button */}

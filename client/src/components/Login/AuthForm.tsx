@@ -1,8 +1,9 @@
-import { assets } from "../assets/assets";
+import { assets } from "../../assets/assets";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import { useAppContext } from "../../hooks/useAppContext";
 import { toast } from "react-toastify";
-import { useAppContext } from "../hooks/useAppContext";
+import axios from "axios";
+import Loading from "../UI/Loading";
 
 const STYLES = {
   container:
@@ -179,7 +180,7 @@ export default function AuthForm({ authSet, onNavigate }: AuthFormProps) {
       )}
 
       <button className={STYLES.submit}>
-        {isSubmitting ? "Submitting..." : authSet}
+        {isSubmitting ? <Loading /> : authSet}
       </button>
     </form>
   );

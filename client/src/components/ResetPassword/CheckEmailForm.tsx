@@ -1,8 +1,9 @@
+import { assets } from "../../assets/assets";
 import { useRef, useState } from "react";
-import { assets } from "../assets/assets";
-import { useAppContext } from "../hooks/useAppContext";
+import { useAppContext } from "../../hooks/useAppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Loading from "../UI/Loading";
 
 const STYLES = {
   formContainer: "bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm",
@@ -71,7 +72,7 @@ export default function CheckEmailForm({ onEmailSent }: CheckEmailProps) {
         />
       </div>
       <button className={STYLES.submitButton} disabled={isLoading}>
-        {isLoading ? "Sending..." : "Send Reset Code"}
+        {isLoading ? <Loading /> : "Send Reset Code"}
       </button>
     </form>
   );

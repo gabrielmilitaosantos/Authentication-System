@@ -1,5 +1,5 @@
-import { assets } from "../assets/assets";
-import { useAppContext } from "../hooks/useAppContext";
+import { assets } from "../../assets/assets";
+import { useAppContext } from "../../hooks/useAppContext";
 
 const STYLES = {
   container: "flex flex-col items-center mt-20 px-4 text-center text-gray-800",

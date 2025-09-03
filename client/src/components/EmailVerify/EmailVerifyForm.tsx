@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { useOtpInput } from "../hooks/useOtpInput";
+import { useOtpInput } from "../../hooks/useOtpInput";
 import { toast } from "react-toastify";
-import { useAppContext } from "../hooks/useAppContext";
-import { formatTime } from "../util/timeFormat";
+import { useAppContext } from "../../hooks/useAppContext";
+import { formatTime } from "../../util/timeFormat";
 import { useNavigate } from "react-router";
 import axios from "axios";
 
