@@ -1,15 +1,15 @@
 {
-  "name": "server",
+  "name": "auth-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Authentication backend with Google OAuth",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "@gabrielmilitao",
-  "license": "ISC",
-  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
@@ -21,5 +21,13 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.5",
     "postgres": "^3.4.7"
-  }
+  },
+  "keywords": [
+    "authentication",
+    "oauth",
+    "express",
+    "postgresql"
+  ],
+  "author": "@gabrielmilitao",
+  "license": "ISC"
 }
